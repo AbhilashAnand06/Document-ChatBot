@@ -19,7 +19,21 @@ groq_api_key=os.getenv('GROQ_API_KEY')
 os.environ["GOOGLE_API_KEY"]=os.getenv("GOOGLE_API_KEY")
 
 st.title("Document ChatBot")
-st.subheader("Powered by Gemma model")
+# add sub-text
+st.markdown(
+    """
+    <div style="text-align:right; font-size: small;">
+        powered by Google's Gemma model
+    </div>    
+    """,
+    unsafe_allow_html=True
+)
+
+#add empty strings
+st.write("")
+st.write("")
+
+
 llm=ChatGroq(groq_api_key=groq_api_key,
              model_name="gemma-7b-it")
 
@@ -60,11 +74,12 @@ if prompt1:
     document_chain = create_stuff_documents_chain(llm,prompt)
     retriever=st.session_state.vectors.as_retriever()
     retrieval_chain=create_retrieval_chain(retriever,document_chain)
-    start=time.process_time()
+    start=time.time()
     response=retrieval_chain.invoke({'input':prompt1})
+    end=time.time()
     st.write(response['answer'])
-    response_time = time.process_time()-start
-    st.write(f"Response time : {response_time:.2f} seconds")
+    response_time = end-start
+    st.write(f"Response time : {response_time:.4f} seconds")
 
     # With a streamlit expander
     with st.expander("Document Similarity Search (view information sources)"):
